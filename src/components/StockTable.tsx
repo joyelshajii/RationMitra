@@ -3,7 +3,7 @@ import { RationShop, StockItem, CardType } from '../types';
 import { usePds } from '../context/PdsContext';
 import { CARD_TYPES } from '../data/seedData';
 import { TrustBadge } from './TrustBadge';
-import { Bell, Check, Clock, AlertCircle } from 'lucide-react';
+import { Bell, Check, Clock, AlertCircle, FileText } from 'lucide-react';
 
 interface StockTableProps {
   shop: RationShop;
@@ -19,7 +19,6 @@ export const StockTable: React.FC<StockTableProps> = ({
   const { setAuditModalItem, setSubscribeModalData, language } = usePds();
   const isMl = language === 'ml';
 
-  // Filter items if cardTypeFilter is active
   const filteredStock = shop.stock.filter((item) => {
     if (cardTypeFilter === 'ALL') return true;
     return item.eligibleCards.includes(cardTypeFilter);
@@ -30,41 +29,41 @@ export const StockTable: React.FC<StockTableProps> = ({
       case 'IN_STOCK':
         return (
           <span
-            className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300"
-            style={{ borderRadius: '4px' }}
+            className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200"
+            style={{ borderRadius: '3px' }}
           >
-            <Check className="w-3 h-3" />
-            {isMl ? 'ലഭ്യമാണ്' : 'In Stock'}
+            <Check className="w-3 h-3 text-emerald-600" />
+            <span>{isMl ? 'ലഭ്യമാണ്' : 'In Stock'}</span>
           </span>
         );
       case 'LOW_STOCK':
         return (
           <span
-            className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300"
-            style={{ borderRadius: '4px' }}
+            className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold bg-amber-50 text-amber-900 border border-amber-200"
+            style={{ borderRadius: '3px' }}
           >
-            <AlertCircle className="w-3 h-3" />
-            {isMl ? 'കുറവാണ്' : 'Low Stock'}
+            <AlertCircle className="w-3 h-3 text-amber-600" />
+            <span>{isMl ? 'കുറവാണ്' : 'Low Stock'}</span>
           </span>
         );
       case 'EXHAUSTED':
         return (
           <span
-            className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-red-100 text-red-800 border border-red-300"
-            style={{ borderRadius: '4px' }}
+            className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold bg-red-50 text-red-800 border border-red-200"
+            style={{ borderRadius: '3px' }}
           >
-            <AlertCircle className="w-3 h-3" />
-            {isMl ? 'തീർന്നു' : 'Exhausted'}
+            <AlertCircle className="w-3 h-3 text-red-600" />
+            <span>{isMl ? 'തീർന്നു' : 'Exhausted'}</span>
           </span>
         );
       case 'AWAITING_SUPPLY':
         return (
           <span
-            className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-300"
-            style={{ borderRadius: '4px' }}
+            className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold bg-blue-50 text-blue-800 border border-blue-200"
+            style={{ borderRadius: '3px' }}
           >
-            <Clock className="w-3 h-3" />
-            {isMl ? 'വരുന്നതേയുള്ളൂ' : 'In Transit'}
+            <Clock className="w-3 h-3 text-blue-600" />
+            <span>{isMl ? 'വരുന്നതേയുള്ളൂ' : 'In Transit'}</span>
           </span>
         );
     }
@@ -72,32 +71,35 @@ export const StockTable: React.FC<StockTableProps> = ({
 
   if (filteredStock.length === 0) {
     return (
-      <div className="p-4 text-center text-xs text-slate-500 bg-slate-50 border border-slate-200" style={{ borderRadius: '4px' }}>
+      <div
+        className="p-6 text-center text-xs text-slate-500 bg-slate-50/70 border border-slate-200"
+        style={{ borderRadius: '4px' }}
+      >
         {isMl
           ? 'ഈ കാർഡ് വിഭാഗത്തിന് അനുവദിച്ച സ്റ്റോക്കുകൾ ഈ കടയിൽ ഇപ്പോൾ ലഭ്യമല്ല.'
-          : 'No specific stock quota registered for this cardholder category at this dealership.'}
+          : 'No specific stock allocation registered for this cardholder category at this dealership.'}
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto border border-slate-200" style={{ borderRadius: '4px' }}>
+    <div className="overflow-x-auto border border-slate-200 bg-white" style={{ borderRadius: '4px' }}>
       <table className="w-full text-left border-collapse text-xs">
         <thead>
-          <tr className="bg-slate-100/80 border-b border-slate-200 text-slate-700 font-semibold uppercase tracking-wider text-[11px]">
-            <th className="py-2.5 px-3">{isMl ? 'സാധനം' : 'Commodity'}</th>
-            <th className="py-2.5 px-3">{isMl ? 'അളവ്' : 'Balance'}</th>
-            <th className="py-2.5 px-3">{isMl ? 'നിലവാരം' : 'Status'}</th>
-            {!compact && <th className="py-2.5 px-3">{isMl ? 'അർഹത' : 'Eligible Cards'}</th>}
-            <th className="py-2.5 px-3">{isMl ? 'വിശ്വാസ്യത' : 'Credibility'}</th>
-            <th className="py-2.5 px-3 text-right">{isMl ? 'നടപടി' : 'Action'}</th>
+          <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold text-[11px] uppercase tracking-wider">
+            <th className="py-2.5 px-3.5">{isMl ? 'സാധനം & നിരക്ക്' : 'Commodity & Rate'}</th>
+            <th className="py-2.5 px-3.5 text-right">{isMl ? 'ലഭ്യമായ അളവ്' : 'Balance'}</th>
+            <th className="py-2.5 px-3.5">{isMl ? 'നിലവാരം' : 'Status'}</th>
+            {!compact && <th className="py-2.5 px-3.5">{isMl ? 'അർഹത' : 'Eligible Cards'}</th>}
+            <th className="py-2.5 px-3.5">{isMl ? 'വിശ്വാസ്യത' : 'Credibility'}</th>
+            <th className="py-2.5 px-3.5 text-right">{isMl ? 'നടപടി' : 'Action'}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-200 bg-white font-sans">
+        <tbody className="divide-y divide-slate-100 font-sans">
           {filteredStock.map((item) => (
-            <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-              {/* Commodity Name & Price */}
-              <td className="py-2.5 px-3">
+            <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+              {/* Commodity & Rate */}
+              <td className="py-3 px-3.5">
                 <div className="font-semibold text-slate-900">
                   {isMl ? item.nameMl : item.nameEn}
                 </div>
@@ -107,26 +109,28 @@ export const StockTable: React.FC<StockTableProps> = ({
               </td>
 
               {/* Quantity */}
-              <td className="py-2.5 px-3 font-mono font-bold text-slate-800">
-                {item.quantityAvailable}{' '}
-                <span className="text-[11px] font-normal text-slate-500 font-sans">
+              <td className="py-3 px-3.5 text-right">
+                <span className="font-mono font-bold text-slate-900 tabular-nums text-sm">
+                  {item.quantityAvailable}
+                </span>{' '}
+                <span className="text-[11px] text-slate-500 font-normal">
                   {item.unit}
                 </span>
               </td>
 
-              {/* Status Badge */}
-              <td className="py-2.5 px-3">{getStatusBadge(item.status)}</td>
+              {/* Status */}
+              <td className="py-3 px-3.5">{getStatusBadge(item.status)}</td>
 
               {/* Eligible Cards */}
               {!compact && (
-                <td className="py-2.5 px-3">
+                <td className="py-3 px-3.5">
                   <div className="flex flex-wrap gap-1">
                     {item.eligibleCards.map((c) => {
                       const cInfo = CARD_TYPES[c];
                       return (
                         <span
                           key={c}
-                          className="px-1.5 py-0.2 text-[10px] font-bold border"
+                          className="px-1.5 py-0.5 text-[10px] font-bold border font-mono"
                           style={{
                             backgroundColor: cInfo?.bgHex || '#f1f5f9',
                             color: cInfo?.textHex || '#0f172a',
@@ -144,7 +148,7 @@ export const StockTable: React.FC<StockTableProps> = ({
               )}
 
               {/* Trust Badge */}
-              <td className="py-2.5 px-3">
+              <td className="py-3 px-3.5">
                 <TrustBadge
                   level={item.trustLevel}
                   score={item.trustScore}
@@ -154,12 +158,12 @@ export const StockTable: React.FC<StockTableProps> = ({
               </td>
 
               {/* Action Button */}
-              <td className="py-2.5 px-3 text-right">
+              <td className="py-3 px-3.5 text-right">
                 {item.status === 'EXHAUSTED' || item.status === 'AWAITING_SUPPLY' || item.status === 'LOW_STOCK' ? (
                   <button
                     type="button"
                     onClick={() => setSubscribeModalData({ shop, item })}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-blue-700 bg-blue-50/80 border border-blue-200 hover:bg-blue-100/70 transition-colors"
                     style={{ borderRadius: '4px' }}
                   >
                     <Bell className="w-3 h-3" />
@@ -169,10 +173,11 @@ export const StockTable: React.FC<StockTableProps> = ({
                   <button
                     type="button"
                     onClick={() => setAuditModalItem({ shop, item })}
-                    className="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-300 hover:bg-slate-100 transition-colors"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors"
                     style={{ borderRadius: '4px' }}
                   >
-                    {isMl ? 'രേഖകൾ' : 'Audit'}
+                    <FileText className="w-3 h-3 text-slate-500" />
+                    <span>{isMl ? 'രേഖകൾ' : 'Audit'}</span>
                   </button>
                 )}
               </td>

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePds } from '../context/PdsContext';
-import { X, Bell, CheckCircle2, MessageSquare, PhoneCall, Smartphone } from 'lucide-react';
+import { X, Bell, CheckCircle2, MessageSquare, Smartphone } from 'lucide-react';
 import { CommodityId } from '../types';
 
 export const SubscribeModal: React.FC = () => {
@@ -11,6 +11,18 @@ export const SubscribeModal: React.FC = () => {
   );
   const [channel, setChannel] = useState<'SMS' | 'WHATSAPP' | 'WEB_PUSH'>('WHATSAPP');
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSubscribeModalData(null);
+      }
+    };
+    if (subscribeModalData) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [subscribeModalData, setSubscribeModalData]);
 
   if (!subscribeModalData) return null;
 
@@ -35,7 +47,7 @@ export const SubscribeModal: React.FC = () => {
     setTimeout(() => {
       setIsSuccess(false);
       setSubscribeModalData(null);
-    }, 2200);
+    }, 2000);
   };
 
   return (
@@ -43,54 +55,59 @@ export const SubscribeModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="sub-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity"
     >
       <div
-        className="bg-white border border-slate-300 w-full max-w-lg shadow-xl overflow-hidden"
+        className="bg-white border border-slate-200 w-full max-w-lg shadow-2xl overflow-hidden transition-transform"
         style={{ borderRadius: '6px' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/80">
           <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-blue-700" />
+            <Bell className="w-5 h-5 text-blue-700 shrink-0" />
             <h2 id="sub-modal-title" className="text-base font-bold text-slate-900">
-              {isMl ? 'സ്റ്റോക്ക് എത്തുമ്പോൾ അറിയിപ്പ് നേടൂ' : 'Commodity Arrival Notification'}
+              {isMl ? 'സ്റ്റോക്ക് എത്തുമ്പോൾ അറിയിപ്പ് നേടൂ' : 'Commodity Arrival Alert Subscription'}
             </h2>
           </div>
           <button
             type="button"
             onClick={() => setSubscribeModalData(null)}
-            className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-200/70 transition-colors"
             style={{ borderRadius: '4px' }}
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {isSuccess ? (
           <div className="p-8 text-center space-y-3">
-            <div className="w-12 h-12 bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center" style={{ borderRadius: '4px' }}>
-              <CheckCircle2 className="w-7 h-7" />
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-700 border border-emerald-200 mx-auto flex items-center justify-center" style={{ borderRadius: '4px' }}>
+              <CheckCircle2 className="w-6 h-6" />
             </div>
             <h3 className="text-base font-bold text-slate-900">
-              {isMl ? 'അറിയിപ്പ് വിജയകരമായി സജീവമാക്കി!' : 'Alert Subscription Activated!'}
+              {isMl ? 'അറിയിപ്പ് സജീവമാക്കി!' : 'Alert Subscription Active!'}
             </h3>
             <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
               {isMl
-                ? `റേഷൻ കടയിൽ പുതിയ ലോഡ് എത്തുമ്പോൾ ${channel} വഴി നിങ്ങളെ ഉടൻ അറിയിക്കുന്നതാണ്.`
-                : `You will receive an automated ${channel} notification the moment the dealer logs the arrival delivery challan.`}
+                ? `റേഷൻ കടയിൽ പുതിയ ലോഡ് എത്തുമ്പോൾ ${channel} വഴി ഉടൻ അറിയിക്കുന്നതാണ്.`
+                : `You will receive an automated ${channel} message the moment the dealership logs the delivery challan.`}
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            <div className="p-3 bg-blue-50/60 border border-blue-200 text-xs text-blue-900" style={{ borderRadius: '4px' }}>
-              <span className="font-semibold">{shop.ardNumber}</span> • {shop.nameEn}
-              <div className="text-[11px] text-blue-700 mt-0.5">{shop.ward}, {shop.taluk}</div>
+            <div className="p-3 bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-center justify-between" style={{ borderRadius: '4px' }}>
+              <div>
+                <span className="font-bold text-slate-900">{shop.ardNumber}</span> • {shop.nameEn}
+                <div className="text-[11px] text-slate-500 mt-0.5">{shop.ward}, {shop.taluk}</div>
+              </div>
+              <span className="text-[11px] font-mono text-slate-500 bg-white px-2 py-0.5 border border-slate-200" style={{ borderRadius: '2px' }}>
+                {shop.distanceKm} km away
+              </span>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                {isMl ? 'ആവശ്യമുള്ള സാധനം തിരഞ്ഞെടുക്കുക' : 'Select Essential Commodity'}
+                {isMl ? 'ആവശ്യമുള്ള സാധനം' : 'Select Commodity for Arrival Tracking'}
               </label>
               <select
                 value={commodityId}
@@ -100,7 +117,7 @@ export const SubscribeModal: React.FC = () => {
               >
                 {shop.stock.map((st) => (
                   <option key={st.id} value={st.id}>
-                    {isMl ? st.nameMl : st.nameEn} ({st.status})
+                    {isMl ? st.nameMl : st.nameEn} (Current: {st.status})
                   </option>
                 ))}
               </select>
@@ -108,7 +125,7 @@ export const SubscribeModal: React.FC = () => {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                {isMl ? 'മൊബൈൽ നമ്പർ (10 അക്കങ്ങൾ)' : 'Mobile Number (10 digits)'}
+                {isMl ? 'മൊബൈൽ നമ്പർ' : 'Mobile Phone Number'}
               </label>
               <div className="flex">
                 <span className="inline-flex items-center px-3 border border-r-0 border-slate-300 bg-slate-100 text-slate-600 text-xs font-mono" style={{ borderTopLeftRadius: '4px', borderBottomLeftRadius: '4px' }}>
@@ -128,23 +145,23 @@ export const SubscribeModal: React.FC = () => {
               </div>
               <p className="text-[11px] text-slate-500 mt-1">
                 {isMl
-                  ? 'നിങ്ങളുടെ നമ്പർ സ്റ്റോക്ക് അലേർട്ടിനായി മാത്രം ഉപയോഗിക്കും. മറ്റ് ആവശ്യങ്ങൾക്ക് പങ്കിടില്ല.'
-                  : 'Used strictly for PDS quota arrival notification. Zero spam or commercial use.'}
+                  ? 'സ്റ്റോക്ക് അറിയിപ്പുകൾക്ക് വേണ്ടി മാത്രം ഉപയോഗിക്കും.'
+                  : 'Used strictly for quota arrival alerts. Completely zero marketing or third-party sharing.'}
               </p>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                {isMl ? 'അറിയിപ്പ് ലഭിക്കേണ്ട മാധ്യമം' : 'Preferred Notification Channel'}
+                {isMl ? 'അറിയിപ്പ് മാധ്യമം' : 'Alert Dispatch Channel'}
               </label>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => setChannel('WHATSAPP')}
-                  className={`flex flex-col items-center justify-center p-2.5 border text-xs font-medium transition-colors ${
+                  className={`flex flex-col items-center justify-center p-2.5 border text-xs font-medium transition-all ${
                     channel === 'WHATSAPP'
-                      ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-semibold'
-                      : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+                      ? 'border-emerald-600 bg-emerald-50/70 text-emerald-950 font-bold'
+                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                   }`}
                   style={{ borderRadius: '4px' }}
                 >
@@ -155,10 +172,10 @@ export const SubscribeModal: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setChannel('SMS')}
-                  className={`flex flex-col items-center justify-center p-2.5 border text-xs font-medium transition-colors ${
+                  className={`flex flex-col items-center justify-center p-2.5 border text-xs font-medium transition-all ${
                     channel === 'SMS'
-                      ? 'border-blue-600 bg-blue-50 text-blue-900 font-semibold'
-                      : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+                      ? 'border-blue-600 bg-blue-50/70 text-blue-950 font-bold'
+                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                   }`}
                   style={{ borderRadius: '4px' }}
                 >
@@ -169,10 +186,10 @@ export const SubscribeModal: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setChannel('WEB_PUSH')}
-                  className={`flex flex-col items-center justify-center p-2.5 border text-xs font-medium transition-colors ${
+                  className={`flex flex-col items-center justify-center p-2.5 border text-xs font-medium transition-all ${
                     channel === 'WEB_PUSH'
-                      ? 'border-slate-800 bg-slate-100 text-slate-900 font-semibold'
-                      : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+                      ? 'border-slate-900 bg-slate-100 text-slate-900 font-bold'
+                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                   }`}
                   style={{ borderRadius: '4px' }}
                 >
@@ -193,10 +210,10 @@ export const SubscribeModal: React.FC = () => {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-xs font-semibold text-white bg-blue-700 hover:bg-blue-800 transition-colors"
+                className="px-5 py-2 text-xs font-semibold text-white bg-blue-700 hover:bg-blue-800 transition-colors shadow-xs"
                 style={{ borderRadius: '4px' }}
               >
-                {isMl ? 'അറിയിപ്പ് സജീവമാക്കുക' : 'Activate Stock Alert'}
+                {isMl ? 'അറിയിപ്പ് സജീവമാക്കുക' : 'Activate Alert'}
               </button>
             </div>
           </form>

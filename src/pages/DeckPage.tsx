@@ -6,20 +6,18 @@ import {
   Presentation,
   CheckCircle2,
   AlertCircle,
-  ExternalLink,
   Code2,
   Database,
-  Users,
   Shield,
   Layers,
-  ArrowRight,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
-import { getTranslation } from '../utils/i18n';
 
 export const DeckPage: React.FC = () => {
-  const { language, setActiveView } = usePds();
+  const { setActiveView } = usePds();
   const [currentSlide, setCurrentSlide] = useState<number>(1);
-  const isMl = language === 'ml';
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const totalSlides = 8;
 
@@ -30,6 +28,8 @@ export const DeckPage: React.FC = () => {
         setCurrentSlide((prev) => Math.min(totalSlides, prev + 1));
       } else if (e.key === 'ArrowLeft') {
         setCurrentSlide((prev) => Math.max(1, prev - 1));
+      } else if (e.key === 'f' || e.key === 'F') {
+        setIsFullscreen((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -47,10 +47,12 @@ export const DeckPage: React.FC = () => {
     '8. Team Details & Submission Information',
   ];
 
+  const progressPct = Math.round((currentSlide / totalSlides) * 100);
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Top Deck Control Header */}
-      <div className="bg-[#0F2942] text-white p-5 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style={{ borderRadius: '6px' }}>
+    <div className={`space-y-6 ${isFullscreen ? 'fixed inset-0 z-50 bg-[#0C1E33] p-6 sm:p-10 overflow-y-auto' : 'max-w-5xl mx-auto'}`}>
+      {/* Deck Header & Controls */}
+      <div className="bg-[#0C1E33] text-white p-5 border border-slate-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4" style={{ borderRadius: '6px' }}>
         <div>
           <div className="flex items-center gap-2">
             <Presentation className="w-5 h-5 text-amber-400" />
@@ -63,37 +65,55 @@ export const DeckPage: React.FC = () => {
           </h1>
         </div>
 
-        {/* Slide Counter & Prev/Next */}
+        {/* Counter, Nav & Fullscreen */}
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
             disabled={currentSlide === 1}
             onClick={() => setCurrentSlide((prev) => Math.max(1, prev - 1))}
-            className="p-1.5 bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 border border-slate-700"
+            className="p-2 bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 border border-slate-700 transition-colors"
             style={{ borderRadius: '4px' }}
             aria-label="Previous slide"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          <span className="font-mono text-xs font-bold text-slate-200 px-2">
-            Slide {currentSlide} of {totalSlides}
+          <span className="font-mono text-xs font-bold text-slate-200 px-3 tabular-nums">
+            {currentSlide} / {totalSlides}
           </span>
 
           <button
             type="button"
             disabled={currentSlide === totalSlides}
             onClick={() => setCurrentSlide((prev) => Math.min(totalSlides, prev + 1))}
-            className="p-1.5 bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 border border-slate-700"
+            className="p-2 bg-slate-800 text-white disabled:opacity-30 hover:bg-slate-700 border border-slate-700 transition-colors"
             style={{ borderRadius: '4px' }}
             aria-label="Next slide"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
+
+          <button
+            type="button"
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="p-2 bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 ml-2 transition-colors"
+            style={{ borderRadius: '4px' }}
+            title="Toggle fullscreen (Press F)"
+          >
+            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
-      {/* Slide Navigation Thumbnails */}
+      {/* Slide Navigation Progress Bar */}
+      <div className="w-full bg-slate-200 h-1.5 overflow-hidden" style={{ borderRadius: '2px' }}>
+        <div
+          className="bg-blue-600 h-1.5 transition-all duration-300"
+          style={{ width: `${progressPct}%` }}
+        />
+      </div>
+
+      {/* Slide Thumbnail Tabs */}
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5 text-xs font-mono">
         {slideTitles.map((title, idx) => {
           const slideNum = idx + 1;
@@ -103,12 +123,12 @@ export const DeckPage: React.FC = () => {
               key={slideNum}
               type="button"
               onClick={() => setCurrentSlide(slideNum)}
-              className={`py-1.5 px-1 border text-center transition-colors truncate ${
+              className={`py-2 px-1 border text-center transition-all truncate ${
                 isActive
-                  ? 'bg-blue-700 text-white font-bold border-blue-800'
-                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                  ? 'bg-blue-700 text-white font-bold border-blue-800 shadow-xs'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
               }`}
-              style={{ borderRadius: '3px' }}
+              style={{ borderRadius: '4px' }}
               title={title}
             >
               Slide {slideNum}
@@ -117,13 +137,13 @@ export const DeckPage: React.FC = () => {
         })}
       </div>
 
-      {/* Main Active Slide Display Card */}
+      {/* Active Slide Canvas */}
       <div
-        className="bg-white border border-slate-300 p-8 sm:p-12 shadow-sm min-h-[500px] flex flex-col justify-between"
+        className="bg-white border border-slate-200 p-8 sm:p-12 shadow-md min-h-[520px] flex flex-col justify-between"
         style={{ borderRadius: '6px' }}
       >
         <div>
-          <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
             <span className="text-xs font-mono font-bold text-blue-700 tracking-wider uppercase">
               Slide 0{currentSlide} • {slideTitles[currentSlide - 1]}
             </span>
@@ -134,25 +154,25 @@ export const DeckPage: React.FC = () => {
           {currentSlide === 1 && (
             <div className="space-y-6">
               <div>
-                <span className="px-2.5 py-0.5 text-xs font-bold bg-blue-100 text-blue-900 border border-blue-300" style={{ borderRadius: '2px' }}>
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200" style={{ borderRadius: '3px' }}>
                   TRACK 3: PUBLIC WELFARE • SC-09
                 </span>
-                <h2 className="text-2xl font-bold text-slate-900 mt-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 tracking-tight">
                   Ration Shop Stock Visibility: Restoring Dignity &amp; Certainty to PDS Access
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                <div className="p-4 bg-slate-50 border border-slate-200 space-y-2" style={{ borderRadius: '4px' }}>
+                <div className="p-5 bg-slate-50/70 border border-slate-200 space-y-2.5" style={{ borderRadius: '4px' }}>
                   <h3 className="text-sm font-bold text-slate-900">Why This Challenge?</h3>
                   <p className="text-xs text-slate-700 leading-relaxed">
-                    Public Distribution System (PDS) provides life-sustaining food grain rations to over 80 crore Indians, including 3.5+ crore cardholders in Kerala. Yet, the physical delivery chain remains a daily gamble for vulnerable households.
+                    The Public Distribution System (PDS) provides life-sustaining food grain rations to over 80 crore citizens across India, including 3.5+ crore cardholders in Kerala. Yet, the physical delivery chain remains a daily gamble for vulnerable households.
                   </p>
                 </div>
 
-                <div className="p-4 bg-slate-50 border border-slate-200 space-y-2" style={{ borderRadius: '4px' }}>
-                  <h3 className="text-sm font-bold text-slate-900">Critical Drivers</h3>
-                  <ul className="text-xs text-slate-700 space-y-1.5 list-disc pl-4">
+                <div className="p-5 bg-slate-50/70 border border-slate-200 space-y-2.5" style={{ borderRadius: '4px' }}>
+                  <h3 className="text-sm font-bold text-slate-900">Critical Pain Drivers</h3>
+                  <ul className="text-xs text-slate-700 space-y-2 list-disc pl-4 leading-relaxed">
                     <li>
                       <strong>The Mobility Penalty:</strong> Rural cardholders spend ₹40–₹80 on auto/bus fares only to discover Atta or Kerosene hasn't arrived.
                     </li>
@@ -172,42 +192,42 @@ export const DeckPage: React.FC = () => {
           {currentSlide === 2 && (
             <div className="space-y-6">
               <div>
-                <span className="px-2.5 py-0.5 text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300" style={{ borderRadius: '2px' }}>
-                  FIELD EMPATHY &amp; CURRENT REALITY
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200" style={{ borderRadius: '3px' }}>
+                  FIELD OBSERVATION &amp; GROUND REALITY
                 </span>
-                <h2 className="text-2xl font-bold text-slate-900 mt-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 tracking-tight">
                   Who Faces This Problem and How They Cope Today
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <div className="p-4 border border-slate-200 bg-slate-50 space-y-2" style={{ borderRadius: '4px' }}>
+                <div className="p-4 border border-slate-200 bg-slate-50/70 space-y-2" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 block text-sm">1. Rural &amp; Elderly Cardholders</span>
                   <p className="text-slate-600 leading-relaxed">
                     AAY (Yellow) and PHH (Pink) cardholders, especially elderly citizens living 2–5 km away in villages like Kanjirappally, Ponkunnam, and Erumeli.
                   </p>
                   <div className="pt-2 border-t border-slate-200 font-semibold text-slate-800">
-                    Current Action: Walk or take morning bus on blind guesswork; wait in 45-min queues; return empty-handed if shipment is delayed.
+                    Current Reality: Walk or take morning bus on blind guesswork; wait in 45-min queues; return empty-handed if shipment is delayed.
                   </div>
                 </div>
 
-                <div className="p-4 border border-slate-200 bg-slate-50 space-y-2" style={{ borderRadius: '4px' }}>
+                <div className="p-4 border border-slate-200 bg-slate-50/70 space-y-2" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 block text-sm">2. Daily-Wage Workers</span>
                   <p className="text-slate-600 leading-relaxed">
                     NPS (Blue) cardholders who must forfeit half a day's wages (₹400–₹600) to collect monthly wheat flour and rice.
                   </p>
                   <div className="pt-2 border-t border-slate-200 font-semibold text-slate-800">
-                    Current Action: Rely on rumors, informal WhatsApp neighborhood messages, or repeated calls to the shopkeeper's personal mobile.
+                    Current Reality: Rely on rumors, informal WhatsApp neighborhood messages, or repeated calls to the shopkeeper's personal phone.
                   </div>
                 </div>
 
-                <div className="p-4 border border-slate-200 bg-slate-50 space-y-2" style={{ borderRadius: '4px' }}>
+                <div className="p-4 border border-slate-200 bg-slate-50/70 space-y-2" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 block text-sm">3. Ration Dealerships (ARDs)</span>
                   <p className="text-slate-600 leading-relaxed">
                     Shop licensees who receive FCI shipments without fixed schedule and face frustrated cardholder accusations when items run out.
                   </p>
                   <div className="pt-2 border-t border-slate-200 font-semibold text-slate-800">
-                    Current Action: Manually write on blackboards outside the shop; deal with angry crowds whenever ePOS server goes offline.
+                    Current Reality: Manually write on blackboards outside the shop; deal with agitated crowds whenever ePOS server goes offline.
                   </div>
                 </div>
               </div>
@@ -217,17 +237,17 @@ export const DeckPage: React.FC = () => {
           {/* SLIDE 3: What you built - one clear sentence */}
           {currentSlide === 3 && (
             <div className="space-y-8 my-auto py-8">
-              <span className="px-2.5 py-0.5 text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300" style={{ borderRadius: '2px' }}>
-                CORE VALUE PROPOSITION
+              <span className="px-2.5 py-0.5 text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200" style={{ borderRadius: '3px' }}>
+                CORE PRODUCT DEFINITION
               </span>
 
-              <div className="p-8 bg-slate-50 border-l-4 border-blue-700 border-t border-r border-b border-slate-300" style={{ borderRadius: '4px' }}>
-                <p className="text-xl sm:text-2xl font-serif text-slate-900 font-semibold leading-relaxed">
+              <div className="p-8 bg-slate-50 border-l-4 border-blue-700 border-t border-r border-b border-slate-200 shadow-2xs" style={{ borderRadius: '4px' }}>
+                <p className="text-xl sm:text-2xl text-slate-900 font-semibold leading-relaxed tracking-tight">
                   "RationMitra is a bilingual civic web application that provides real-time, card-specific commodity stock visibility across nearby Kerala ration shops, verifies inventory through official FCI delivery challans and crowdsourced ePOS transaction receipts, and automatically notifies subscribed households the moment critical items arrive."
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-700">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-700 font-medium">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>Stock display for 6+ local dealerships</span>
@@ -244,22 +264,22 @@ export const DeckPage: React.FC = () => {
             </div>
           )}
 
-          {/* SLIDE 4: Live product screenshots */}
+          {/* SLIDE 4: Live product screenshots & features */}
           {currentSlide === 4 && (
             <div className="space-y-6">
               <div>
-                <span className="px-2.5 py-0.5 text-xs font-bold bg-blue-100 text-blue-900 border border-blue-300" style={{ borderRadius: '2px' }}>
-                  PRODUCT WALKTHROUGH &amp; FLOWS
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200" style={{ borderRadius: '3px' }}>
+                  FEATURE ARCHITECTURE &amp; FLOWS
                 </span>
-                <h2 className="text-2xl font-bold text-slate-900 mt-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 tracking-tight">
                   Deployed Prototype Features &amp; User Journeys
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div className="border border-slate-300 p-4 bg-slate-50" style={{ borderRadius: '4px' }}>
+                <div className="border border-slate-200 p-4 bg-slate-50/70" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 block text-sm mb-1">
-                    A. Multi-Shop Grid &amp; Card Filter
+                    A. Multi-Shop Directory &amp; Card Filter
                   </span>
                   <p className="text-slate-600 leading-relaxed mb-3">
                     Citizens search by ARD or Taluk and toggle their card colour (Yellow, Pink, Blue, White) to see exactly what is available for their specific entitlement.
@@ -269,7 +289,7 @@ export const DeckPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="border border-slate-300 p-4 bg-slate-50" style={{ borderRadius: '4px' }}>
+                <div className="border border-slate-200 p-4 bg-slate-50/70" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 block text-sm mb-1">
                     B. Two-Sided Update Engine
                   </span>
@@ -277,11 +297,11 @@ export const DeckPage: React.FC = () => {
                     Cardholders submit ground reports in 30 seconds with ePOS slip corroboration. Dealers log truck Delivery Challans (DC) with instant arrival broadcasts.
                   </p>
                   <div className="p-2 bg-white border border-slate-200 font-mono text-[11px] text-slate-700">
-                    Citizen Form (/report) • PIN-Protected Dealer Portal (/dealer)
+                    Citizen Form (/report) • PIN-Protected Dealer Console (/dealer)
                   </div>
                 </div>
 
-                <div className="border border-slate-300 p-4 bg-slate-50" style={{ borderRadius: '4px' }}>
+                <div className="border border-slate-200 p-4 bg-slate-50/70" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 block text-sm mb-1">
                     C. Tri-Factor Trust Verification
                   </span>
@@ -293,7 +313,7 @@ export const DeckPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="border border-slate-300 p-4 bg-slate-50" style={{ borderRadius: '4px' }}>
+                <div className="border border-slate-200 p-4 bg-slate-50/70" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 block text-sm mb-1">
                     D. Household Arrival Notifications
                   </span>
@@ -312,41 +332,41 @@ export const DeckPage: React.FC = () => {
           {currentSlide === 5 && (
             <div className="space-y-6">
               <div>
-                <span className="px-2.5 py-0.5 text-xs font-bold bg-blue-100 text-blue-900 border border-blue-300" style={{ borderRadius: '2px' }}>
-                  TECHNICAL ARCHITECTURE &amp; DATA ENGINE
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200" style={{ borderRadius: '3px' }}>
+                  TECHNICAL ARCHITECTURE &amp; SCHEMA
                 </span>
-                <h2 className="text-2xl font-bold text-slate-900 mt-2">
-                  System Architecture, Technology Stack &amp; Schema
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 tracking-tight">
+                  System Architecture, Technology Stack &amp; Data Model
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <div className="border border-slate-300 p-4 bg-slate-50 space-y-2" style={{ borderRadius: '4px' }}>
+                <div className="border border-slate-200 p-4 bg-slate-50/70 space-y-2" style={{ borderRadius: '4px' }}>
                   <div className="flex items-center gap-1.5 font-bold text-slate-900">
                     <Code2 className="w-4 h-4 text-blue-700" />
                     <span>Frontend &amp; UX</span>
                   </div>
-                  <ul className="text-slate-700 space-y-1">
-                    <li>• <strong>Framework:</strong> React 18, Vite 8, TypeScript</li>
+                  <ul className="text-slate-700 space-y-1.5 leading-relaxed">
+                    <li>• <strong>Framework:</strong> React 19, Vite 8, TypeScript</li>
                     <li>• <strong>Styling:</strong> Tailwind CSS v4 (Strict civic-tech tokens, zero vibe-coding)</li>
                     <li>• <strong>Localization:</strong> Native English &amp; മലയാളം i18n engine</li>
                     <li>• <strong>Accessibility:</strong> Semantic HTML5, high-contrast palette</li>
                   </ul>
                 </div>
 
-                <div className="border border-slate-300 p-4 bg-slate-50 space-y-2" style={{ borderRadius: '4px' }}>
+                <div className="border border-slate-200 p-4 bg-slate-50/70 space-y-2" style={{ borderRadius: '4px' }}>
                   <div className="flex items-center gap-1.5 font-bold text-slate-900">
                     <Database className="w-4 h-4 text-emerald-700" />
                     <span>State &amp; Persistence</span>
                   </div>
-                  <ul className="text-slate-700 space-y-1">
+                  <ul className="text-slate-700 space-y-1.5 leading-relaxed">
                     <li>• <strong>Offline-First:</strong> Resilient localStorage engine that maintains functionality during rural network drops</li>
                     <li>• <strong>Schema:</strong> Normalized RationShop, StockItem, AuditEntry, AlertSubscription entities</li>
                     <li>• <strong>Event Loop:</strong> Reactive notification dispatch upon dealer inventory events</li>
                   </ul>
                 </div>
 
-                <div className="border border-slate-300 p-4 bg-slate-50 space-y-2" style={{ borderRadius: '4px' }}>
+                <div className="border border-slate-200 p-4 bg-slate-50/70 space-y-2" style={{ borderRadius: '4px' }}>
                   <div className="flex items-center gap-1.5 font-bold text-slate-900">
                     <Shield className="w-4 h-4 text-amber-700" />
                     <span>Trust Algorithm</span>
@@ -354,7 +374,7 @@ export const DeckPage: React.FC = () => {
                   <div className="font-mono text-[11px] bg-white p-2 border border-slate-200 text-slate-800">
                     Trust = 40(DC) + 35(Receipts) + 25(Freshness) - 22(Disputes)
                   </div>
-                  <p className="text-[11px] text-slate-600">
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
                     If disputes &ge; 2, auto-flags as "Disputed" to protect consumers.
                   </p>
                 </div>
@@ -366,21 +386,21 @@ export const DeckPage: React.FC = () => {
           {currentSlide === 6 && (
             <div className="space-y-6">
               <div>
-                <span className="px-2.5 py-0.5 text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300" style={{ borderRadius: '2px' }}>
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200" style={{ borderRadius: '3px' }}>
                   HONEST STATUS &amp; CAPABILITY AUDIT
                 </span>
-                <h2 className="text-2xl font-bold text-slate-900 mt-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 tracking-tight">
                   What Works Now and What Does Not
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                <div className="p-5 border border-emerald-300 bg-emerald-50/40 space-y-3" style={{ borderRadius: '4px' }}>
-                  <div className="flex items-center gap-2 font-bold text-emerald-900 text-sm">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-700" />
+                <div className="p-5 border border-emerald-200 bg-emerald-50/40 space-y-3" style={{ borderRadius: '4px' }}>
+                  <div className="flex items-center gap-2 font-bold text-emerald-950 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-700" />
                     <span>What Works in This Prototype</span>
                   </div>
-                  <ul className="space-y-2 text-slate-800">
+                  <ul className="space-y-2 text-slate-800 leading-relaxed">
                     <li className="flex items-start gap-2">
                       <span className="text-emerald-700 font-bold">✓</span>
                       <span>Real-time multi-shop inventory search across 6 Kottayam ARDs</span>
@@ -408,12 +428,12 @@ export const DeckPage: React.FC = () => {
                   </ul>
                 </div>
 
-                <div className="p-5 border border-amber-300 bg-amber-50/40 space-y-3" style={{ borderRadius: '4px' }}>
+                <div className="p-5 border border-amber-200 bg-amber-50/40 space-y-3" style={{ borderRadius: '4px' }}>
                   <div className="flex items-center gap-2 font-bold text-amber-950 text-sm">
-                    <AlertCircle className="w-5 h-5 text-amber-700" />
+                    <AlertCircle className="w-4 h-4 text-amber-700" />
                     <span>Current Constraints &amp; Limitations</span>
                   </div>
-                  <ul className="space-y-2 text-slate-800">
+                  <ul className="space-y-2 text-slate-800 leading-relaxed">
                     <li className="flex items-start gap-2">
                       <span className="text-amber-700 font-bold">!</span>
                       <span>
@@ -442,16 +462,16 @@ export const DeckPage: React.FC = () => {
           {currentSlide === 7 && (
             <div className="space-y-6">
               <div>
-                <span className="px-2.5 py-0.5 text-xs font-bold bg-blue-100 text-blue-900 border border-blue-300" style={{ borderRadius: '2px' }}>
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200" style={{ borderRadius: '3px' }}>
                   FUTURE ROADMAP &amp; SCALING
                 </span>
-                <h2 className="text-2xl font-bold text-slate-900 mt-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 tracking-tight">
                   What We Would Build With Two More Weeks
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="p-4 border border-slate-200 bg-slate-50 space-y-1.5" style={{ borderRadius: '4px' }}>
+                <div className="p-4 border border-slate-200 bg-slate-50/70 space-y-1.5" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 text-sm block">
                     1. Direct NIC ePOS API Integration &amp; Webhooks
                   </span>
@@ -460,7 +480,7 @@ export const DeckPage: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="p-4 border border-slate-200 bg-slate-50 space-y-1.5" style={{ borderRadius: '4px' }}>
+                <div className="p-4 border border-slate-200 bg-slate-50/70 space-y-1.5" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 text-sm block">
                     2. USSD &amp; IVR Voice Bot for Feature Phones
                   </span>
@@ -469,7 +489,7 @@ export const DeckPage: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="p-4 border border-slate-200 bg-slate-50 space-y-1.5" style={{ borderRadius: '4px' }}>
+                <div className="p-4 border border-slate-200 bg-slate-50/70 space-y-1.5" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 text-sm block">
                     3. WhatsApp Business API Bot
                   </span>
@@ -478,7 +498,7 @@ export const DeckPage: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="p-4 border border-slate-200 bg-slate-50 space-y-1.5" style={{ borderRadius: '4px' }}>
+                <div className="p-4 border border-slate-200 bg-slate-50/70 space-y-1.5" style={{ borderRadius: '4px' }}>
                   <span className="font-bold text-slate-900 text-sm block">
                     4. Supplyco Godown Predictive Dispatch Model
                   </span>
@@ -494,23 +514,23 @@ export const DeckPage: React.FC = () => {
           {currentSlide === 8 && (
             <div className="space-y-6">
               <div>
-                <span className="px-2.5 py-0.5 text-xs font-bold bg-[#0F2942] text-white" style={{ borderRadius: '2px' }}>
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-[#0C1E33] text-white" style={{ borderRadius: '3px' }}>
                   SELECTION SUBMISSION DETAILS
                 </span>
-                <h2 className="text-2xl font-bold text-slate-900 mt-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2 tracking-tight">
                   Team &amp; Institutional Information
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                <div className="border border-slate-300 p-5 bg-slate-50 space-y-3" style={{ borderRadius: '4px' }}>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                <div className="border border-slate-200 p-5 bg-slate-50/70 space-y-3" style={{ borderRadius: '4px' }}>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
                     Institution
                   </span>
                   <div className="text-sm font-bold text-slate-900">
                     Amal Jyothi College of Engineering (AJCE)
                   </div>
-                  <p className="text-slate-600">
+                  <p className="text-slate-600 leading-relaxed">
                     Kanjirappally, Koovappally P.O., Kottayam, Kerala - 686518
                   </p>
                   <div className="pt-2 border-t border-slate-200 text-[11px] text-slate-500">
@@ -518,32 +538,32 @@ export const DeckPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="border border-slate-300 p-5 bg-slate-50 space-y-3" style={{ borderRadius: '4px' }}>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                <div className="border border-slate-200 p-5 bg-slate-50/70 space-y-3" style={{ borderRadius: '4px' }}>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
                     Team Composition (2 Members)
                   </span>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div>
                       <div className="font-bold text-slate-900">Lead Developer &amp; Architect: Joyel</div>
-                      <div className="text-slate-600">Department of Computer Science &amp; Engineering, AJCE</div>
+                      <div className="text-slate-500 text-[11px]">Department of Computer Science &amp; Engineering, AJCE</div>
                     </div>
                     <div>
                       <div className="font-bold text-slate-900">Co-Developer: Team Partner</div>
-                      <div className="text-slate-600">Department of Computer Science &amp; Engineering, AJCE</div>
+                      <div className="text-slate-500 text-[11px]">Department of Computer Science &amp; Engineering, AJCE</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 bg-blue-50 border border-blue-200 text-xs text-blue-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ borderRadius: '4px' }}>
+              <div className="p-4 bg-blue-50/80 border border-blue-200 text-xs text-blue-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ borderRadius: '4px' }}>
                 <div>
                   <span className="font-bold block">Submission Readiness:</span>
-                  <span>Form link: forms.gle/iPRFq7zTfPL84Dqq9 • Selection Round Target: 19 September 2026</span>
+                  <span>Form link: forms.gle/iPRFq7zTfPL84Dqq9 • Selection Round Deadline: 19 September 2026</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setActiveView('HOME')}
-                  className="px-4 py-2 bg-blue-700 text-white font-bold hover:bg-blue-800 transition-colors self-start sm:self-auto"
+                  className="px-4 py-2 bg-blue-700 text-white font-bold hover:bg-blue-800 transition-colors self-start sm:self-auto shadow-xs"
                   style={{ borderRadius: '4px' }}
                 >
                   Open Live Prototype
@@ -554,9 +574,11 @@ export const DeckPage: React.FC = () => {
         </div>
 
         {/* Slide Bottom Bar Controls */}
-        <div className="border-t border-slate-200 pt-6 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div>
-            <span>Use Left / Right arrow keys to navigate slides</span>
+        <div className="border-t border-slate-100 pt-6 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div className="flex items-center gap-3 font-mono text-[11px]">
+            <span>Navigation: Left / Right arrows or Space</span>
+            <span>•</span>
+            <span>Press F for Fullscreen</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -564,19 +586,19 @@ export const DeckPage: React.FC = () => {
               type="button"
               disabled={currentSlide === 1}
               onClick={() => setCurrentSlide((prev) => Math.max(1, prev - 1))}
-              className="px-3 py-1.5 border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-30"
+              className="px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 transition-colors"
               style={{ borderRadius: '4px' }}
             >
-              Previous Slide
+              Previous
             </button>
             <button
               type="button"
               disabled={currentSlide === totalSlides}
               onClick={() => setCurrentSlide((prev) => Math.min(totalSlides, prev + 1))}
-              className="px-3 py-1.5 bg-[#0F2942] text-white hover:bg-slate-800 disabled:opacity-30"
+              className="px-3 py-1.5 bg-[#0C1E33] text-white hover:bg-slate-800 disabled:opacity-30 transition-colors"
               style={{ borderRadius: '4px' }}
             >
-              Next Slide
+              Next
             </button>
           </div>
         </div>
