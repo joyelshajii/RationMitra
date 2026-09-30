@@ -18,6 +18,7 @@ import {
   Navigation,
   CheckCircle2,
   Package,
+  Share2,
 } from 'lucide-react';
 
 interface ShopCardProps {
@@ -295,6 +296,25 @@ export const ShopCard: React.FC<ShopCardProps> = ({ shop, cardTypeFilter }) => {
             <FileSpreadsheet className="w-3.5 h-3.5 text-slate-500" />
             <span>{isMl ? 'റിപ്പോർട്ട്' : 'Report'}</span>
           </button>
+
+          {/* Share on WhatsApp */}
+          <a
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+              `🏬 *Kerala PDS Ration Stock Alert*\n` +
+              `📍 ${shop.ardNumber} - ${shop.nameEn} (${shop.taluk})\n` +
+              `🚪 Status: ${shop.isOpen ? 'Open for Distribution' : 'Closed'}\n` +
+              `🌾 Matta Rice: ${shop.stock.find(s => s.id === 'matta_rice')?.status === 'IN_STOCK' ? 'In Stock' : 'Out of Stock'}\n` +
+              `⚡ ePOS Terminal: ${shop.eposStatus}\n` +
+              `Verified Civil Supplies Portal: https://civilsupplies.kerala.gov.in`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/60 rounded-lg transition-colors"
+            title="Share stock balance on WhatsApp"
+          >
+            <Share2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span>{isMl ? 'പങ്കുവെക്കുക' : 'Share'}</span>
+          </a>
         </div>
 
         {/* Primary View Profile Button */}

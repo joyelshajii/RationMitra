@@ -11,7 +11,9 @@ import {
   PhoneCall,
   CheckCircle2,
   Sparkles,
+  MessageSquare,
 } from 'lucide-react';
+import { WhatsAppBotModal } from './WhatsAppBotModal';
 import { getTranslation } from '../utils/i18n';
 
 export const Header: React.FC = () => {
@@ -28,6 +30,7 @@ export const Header: React.FC = () => {
 
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [showNoticeBanner, setShowNoticeBanner] = useState(true);
+  const [showBotModal, setShowBotModal] = useState(false);
 
   const t = (key: any) => getTranslation(language, key);
   const isMl = language === 'ml';
@@ -162,6 +165,16 @@ export const Header: React.FC = () => {
             >
               <Presentation className="w-3.5 h-3.5" />
               <span>{t('navDeck')}</span>
+            </button>
+
+            {/* WhatsApp Bot Launcher */}
+            <button
+              type="button"
+              onClick={() => setShowBotModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition-all border border-emerald-200 shadow-2xs"
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{t('navBot')}</span>
             </button>
           </nav>
 
@@ -332,6 +345,12 @@ export const Header: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* WhatsApp Stock Bot Simulator Modal */}
+      <WhatsAppBotModal
+        isOpen={showBotModal}
+        onClose={() => setShowBotModal(false)}
+      />
     </header>
   );
 };
