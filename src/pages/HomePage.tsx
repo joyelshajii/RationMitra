@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { usePds } from '../context/PdsContext';
 import { ShopCard } from '../components/ShopCard';
 import { ShopMapModal } from '../components/ShopMapModal';
+import { CardScannerModal } from '../components/CardScannerModal';
 import { CARD_TYPES } from '../data/seedData';
 import { CardType } from '../types';
 import {
@@ -22,6 +23,7 @@ import {
   Clock,
   ArrowRight,
   PackageCheck,
+  QrCode,
 } from 'lucide-react';
 import { getTranslation } from '../utils/i18n';
 
@@ -47,6 +49,7 @@ export const HomePage: React.FC = () => {
   const [eposOnlineOnly, setEposOnlineOnly] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'CARDS' | 'TABLE'>('CARDS');
   const [showMapModal, setShowMapModal] = useState<boolean>(false);
+  const [showScannerModal, setShowScannerModal] = useState<boolean>(false);
 
   // Interactive Quota Calculator State
   const [showCalculator, setShowCalculator] = useState<boolean>(false);
@@ -188,11 +191,21 @@ export const HomePage: React.FC = () => {
               <span className="text-slate-300">Avg. Trust</span>
             </span>
 
+            {/* Scan Card Trigger Button */}
+            <button
+              type="button"
+              onClick={() => setShowScannerModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/25 hover:bg-blue-500/35 text-blue-200 border border-blue-400/30 font-semibold transition-all cursor-pointer ml-auto"
+            >
+              <QrCode className="w-3.5 h-3.5" />
+              <span>{isMl ? 'കാർഡ് സ്കാൻ' : 'Scan Card'}</span>
+            </button>
+
             {/* Quota Calculator Trigger Button */}
             <button
               type="button"
               onClick={() => setShowCalculator(!showCalculator)}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-400/30 font-semibold transition-all cursor-pointer ml-auto"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-400/30 font-semibold transition-all cursor-pointer"
             >
               <Calculator className="w-3.5 h-3.5" />
               <span>{isMl ? 'എൻ്റെ വിഹിതം കണക്കാക്കുക' : 'Check My Monthly Quota'}</span>
@@ -648,6 +661,18 @@ export const HomePage: React.FC = () => {
         onSelectShop={(id) => {
           setSelectedShopId(id);
           setActiveView('SHOP_DETAIL');
+        }}
+      />
+
+      {/* Optical Card Scanner Modal */}
+      <CardScannerModal
+        isOpen={showScannerModal}
+        onClose={() => setShowScannerModal(false)}
+        onCardDetected={(cardType, shopId) => {
+          setSelectedCardType(cardType);
+          if (shopId) {
+            setSelectedShopId(shopId);
+          }
         }}
       />
     </div>
