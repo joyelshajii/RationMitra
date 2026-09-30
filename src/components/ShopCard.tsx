@@ -19,7 +19,9 @@ import {
   CheckCircle2,
   Package,
   Share2,
+  Ticket,
 } from 'lucide-react';
+import { VirtualTokenModal } from './VirtualTokenModal';
 
 interface ShopCardProps {
   shop: RationShop;
@@ -37,6 +39,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({ shop, cardTypeFilter }) => {
 
   const isMl = language === 'ml';
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [showTokenModal, setShowTokenModal] = useState<boolean>(false);
 
   const getEposBadge = () => {
     switch (shop.eposStatus) {
@@ -315,6 +318,16 @@ export const ShopCard: React.FC<ShopCardProps> = ({ shop, cardTypeFilter }) => {
             <Share2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>{isMl ? 'പങ്കുവെക്കുക' : 'Share'}</span>
           </a>
+          {/* Book Virtual Token */}
+          <button
+            type="button"
+            onClick={() => setShowTokenModal(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/60 rounded-lg transition-colors"
+            title="Book priority time slot token"
+          >
+            <Ticket className="w-3.5 h-3.5 text-amber-600" />
+            <span>{isMl ? 'ടോക്കൺ' : 'Token'}</span>
+          </button>
         </div>
 
         {/* Primary View Profile Button */}
@@ -330,6 +343,13 @@ export const ShopCard: React.FC<ShopCardProps> = ({ shop, cardTypeFilter }) => {
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Virtual Time-Slot Token Modal */}
+      <VirtualTokenModal
+        isOpen={showTokenModal}
+        onClose={() => setShowTokenModal(false)}
+        shop={shop}
+      />
     </article>
   );
 };
