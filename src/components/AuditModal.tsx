@@ -36,14 +36,13 @@ export const AuditModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="audit-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity animate-in fade-in"
     >
       <div
-        className="bg-white border border-slate-200 w-full max-w-2xl max-h-[88vh] overflow-y-auto shadow-2xl transition-transform"
-        style={{ borderRadius: '6px' }}
+        className="bg-white border border-slate-200/90 w-full max-w-2xl max-h-[88vh] overflow-y-auto shadow-2xl rounded-2xl transition-all"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/80 sticky top-0 z-10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80 sticky top-0 z-10 backdrop-blur-xs">
           <div>
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0" />
@@ -58,8 +57,7 @@ export const AuditModal: React.FC = () => {
           <button
             type="button"
             onClick={() => setAuditModalItem(null)}
-            className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-200/70 transition-colors"
-            style={{ borderRadius: '4px' }}
+            className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-200/70 rounded-lg transition-colors"
             aria-label="Close modal"
           >
             <X className="w-4 h-4" />
@@ -69,31 +67,31 @@ export const AuditModal: React.FC = () => {
         {/* Content */}
         <div className="p-6 space-y-6">
           {/* Trust Score Summary Banner */}
-          <div className="border border-slate-200 bg-slate-50/60 p-4" style={{ borderRadius: '4px' }}>
-            <div className="flex items-center justify-between mb-2">
+          <div className="border border-slate-200/80 bg-slate-50/60 p-5 rounded-xl space-y-3">
+            <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 {isMl ? 'വിശ്വാസ്യത സ്കോർ' : 'Tri-Factor Confidence Rating'}
               </span>
-              <span className="text-xl font-mono font-bold text-slate-900 tabular-nums">
+              <span className="text-2xl font-mono font-extrabold text-slate-900 tabular-nums">
                 {trustEval.score} <span className="text-xs text-slate-400 font-normal">/ 100</span>
               </span>
             </div>
 
             {/* Score Progress Bar */}
-            <div className="w-full bg-slate-200 h-2 mb-2.5 overflow-hidden" style={{ borderRadius: '2px' }}>
+            <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
               <div
-                className={`h-2 transition-all duration-300 ${
+                className={`h-2.5 transition-all duration-300 rounded-full ${
                   trustEval.score >= 75
                     ? 'bg-emerald-600'
                     : trustEval.score >= 45
                     ? 'bg-amber-600'
-                    : 'bg-red-600'
+                    : 'bg-rose-600'
                 }`}
-                style={{ width: `${trustEval.score}%`, borderRadius: '2px' }}
+                style={{ width: `${trustEval.score}%` }}
               />
             </div>
 
-            <p className="text-xs text-slate-700 leading-relaxed">
+            <p className="text-xs text-slate-700 leading-relaxed font-medium">
               {isMl ? trustEval.explanationMl : trustEval.explanationEn}
             </p>
           </div>
@@ -104,52 +102,49 @@ export const AuditModal: React.FC = () => {
               {isMl ? 'സ്കോർ നിർണ്ണയ ഘടകങ്ങൾ' : 'Scoring Model Factors'}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="border border-slate-200 p-3 bg-white" style={{ borderRadius: '4px' }}>
-                <div className="flex items-center gap-1.5 text-slate-700 text-xs font-semibold mb-1">
+              <div className="border border-slate-200/80 p-3.5 bg-white rounded-xl shadow-2xs space-y-1">
+                <div className="flex items-center gap-1.5 text-slate-700 text-xs font-semibold">
                   <FileText className="w-4 h-4 text-blue-700" />
                   <span>{isMl ? 'സപ്ലൈകോ ചെല്ലാൻ' : 'Delivery Challan'}</span>
                 </div>
                 <div className="text-base font-mono font-bold text-slate-900 tabular-nums">
                   +{trustEval.breakdown.challanPoints} <span className="text-xs text-slate-400 font-normal">/ 40 pts</span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-slate-500">
                   {item.lastChallanNo ? `DC #${item.lastChallanNo}` : 'No recent DC logged'}
                 </p>
               </div>
 
-              <div className="border border-slate-200 p-3 bg-white" style={{ borderRadius: '4px' }}>
-                <div className="flex items-center gap-1.5 text-slate-700 text-xs font-semibold mb-1">
+              <div className="border border-slate-200/80 p-3.5 bg-white rounded-xl shadow-2xs space-y-1">
+                <div className="flex items-center gap-1.5 text-slate-700 text-xs font-semibold">
                   <UserCheck className="w-4 h-4 text-emerald-700" />
                   <span>{isMl ? 'ഉപഭോക്തൃ സ്ഥിരീകരണം' : 'PoS Receipts'}</span>
                 </div>
                 <div className="text-base font-mono font-bold text-slate-900 tabular-nums">
                   +{trustEval.breakdown.crowdPoints} <span className="text-xs text-slate-400 font-normal">/ 35 pts</span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-slate-500">
                   {item.verifiedReportsCount} citizen confirmations
                 </p>
               </div>
 
-              <div className="border border-slate-200 p-3 bg-white" style={{ borderRadius: '4px' }}>
-                <div className="flex items-center gap-1.5 text-slate-700 text-xs font-semibold mb-1">
+              <div className="border border-slate-200/80 p-3.5 bg-white rounded-xl shadow-2xs space-y-1">
+                <div className="flex items-center gap-1.5 text-slate-700 text-xs font-semibold">
                   <Info className="w-4 h-4 text-amber-700" />
                   <span>{isMl ? 'തത്സമയ പുതുക്കൽ' : 'Freshness Decay'}</span>
                 </div>
                 <div className="text-base font-mono font-bold text-slate-900 tabular-nums">
                   +{trustEval.breakdown.freshnessPoints} <span className="text-xs text-slate-400 font-normal">/ 25 pts</span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-slate-500">
                   Updated {new Date(item.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
             </div>
 
             {trustEval.breakdown.disputePenalty > 0 && (
-              <div
-                className="mt-3 p-2.5 bg-red-50 border border-red-200 text-xs text-red-800 flex items-center gap-2"
-                style={{ borderRadius: '4px' }}
-              >
-                <AlertOctagon className="w-4 h-4 text-red-600 shrink-0" />
+              <div className="mt-3 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2">
+                <AlertOctagon className="w-4 h-4 text-rose-600 shrink-0" />
                 <span>
                   Discrepancy Penalty: -{trustEval.breakdown.disputePenalty} pts ({item.disputeCount} cardholders flagged item unavailable).
                 </span>
