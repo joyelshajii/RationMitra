@@ -12,8 +12,10 @@ import {
   CheckCircle2,
   Sparkles,
   MessageSquare,
+  HeartHandshake,
 } from 'lucide-react';
 import { WhatsAppBotModal } from './WhatsAppBotModal';
+import { DoorstepDeliveryModal } from './DoorstepDeliveryModal';
 import { getTranslation } from '../utils/i18n';
 
 export const Header: React.FC = () => {
@@ -31,6 +33,7 @@ export const Header: React.FC = () => {
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [showNoticeBanner, setShowNoticeBanner] = useState(true);
   const [showBotModal, setShowBotModal] = useState(false);
+  const [showDoorstepModal, setShowDoorstepModal] = useState(false);
 
   const t = (key: any) => getTranslation(language, key);
   const isMl = language === 'ml';
@@ -175,6 +178,16 @@ export const Header: React.FC = () => {
             >
               <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
               <span>{t('navBot')}</span>
+            </button>
+
+            {/* Oppam Doorstep Assistance */}
+            <button
+              type="button"
+              onClick={() => setShowDoorstepModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-rose-800 bg-rose-50 hover:bg-rose-100 transition-all border border-rose-200 shadow-2xs"
+            >
+              <HeartHandshake className="w-3.5 h-3.5 text-rose-600" />
+              <span>{t('navDoorstep')}</span>
             </button>
           </nav>
 
@@ -350,6 +363,12 @@ export const Header: React.FC = () => {
       <WhatsAppBotModal
         isOpen={showBotModal}
         onClose={() => setShowBotModal(false)}
+      />
+
+      {/* Oppam Kudumbashree Doorstep Delivery Modal */}
+      <DoorstepDeliveryModal
+        isOpen={showDoorstepModal}
+        onClose={() => setShowDoorstepModal(false)}
       />
     </header>
   );
