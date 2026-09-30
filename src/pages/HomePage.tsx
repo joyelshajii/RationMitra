@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { usePds } from '../context/PdsContext';
 import { ShopCard } from '../components/ShopCard';
+import { ShopMapModal } from '../components/ShopMapModal';
 import { CARD_TYPES } from '../data/seedData';
 import { CardType } from '../types';
 import {
@@ -45,6 +46,7 @@ export const HomePage: React.FC = () => {
   const [openOnly, setOpenOnly] = useState<boolean>(false);
   const [eposOnlineOnly, setEposOnlineOnly] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'CARDS' | 'TABLE'>('CARDS');
+  const [showMapModal, setShowMapModal] = useState<boolean>(false);
 
   // Interactive Quota Calculator State
   const [showCalculator, setShowCalculator] = useState<boolean>(false);
@@ -454,8 +456,17 @@ export const HomePage: React.FC = () => {
           </div>
 
           {/* View Mode & Count */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-500">
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setShowMapModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-all shadow-2xs"
+            >
+              <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{t('navMap')}</span>
+            </button>
+
+            <span className="text-xs text-slate-500 hidden sm:inline">
               Showing <strong className="text-slate-900 font-bold">{filteredShops.length}</strong> of {shops.length} ARDs
             </span>
 
@@ -629,6 +640,16 @@ export const HomePage: React.FC = () => {
           {t('citizenReportTitle')}
         </button>
       </section>
+
+      {/* Interactive GIS Map Modal */}
+      <ShopMapModal
+        isOpen={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        onSelectShop={(id) => {
+          setSelectedShopId(id);
+          setActiveView('SHOP_DETAIL');
+        }}
+      />
     </div>
   );
 };
