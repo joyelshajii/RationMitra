@@ -15,7 +15,9 @@ import {
   Calendar,
   Layers,
   History,
+  Cpu,
 } from 'lucide-react';
+import { StockPredictionModal } from '../components/StockPredictionModal';
 import { getTranslation } from '../utils/i18n';
 
 export const ShopDetailPage: React.FC = () => {
@@ -34,6 +36,7 @@ export const ShopDetailPage: React.FC = () => {
   const t = (key: any) => getTranslation(language, key);
 
   const [activeTab, setActiveTab] = useState<'STOCK' | 'CHALLANS' | 'COMMUNITY'>('STOCK');
+  const [showPredictionModal, setShowPredictionModal] = useState<boolean>(false);
 
   const shop = shops.find((s) => s.id === selectedShopId) || shops[0];
   if (!shop) return null;
@@ -112,6 +115,16 @@ export const ShopDetailPage: React.FC = () => {
             >
               <Bell className="w-4 h-4" />
               <span>{isMl ? 'അറിയിപ്പ് സജ്ജമാക്കുക' : 'Set Arrival Alert'}</span>
+            </button>
+
+            {/* AI Depletion Forecast for TSO */}
+            <button
+              type="button"
+              onClick={() => setShowPredictionModal(true)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 rounded-xl transition-all"
+            >
+              <Cpu className="w-4 h-4 text-indigo-600" />
+              <span>{t('navForecast')}</span>
             </button>
           </div>
         </div>
@@ -307,6 +320,13 @@ export const ShopDetailPage: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* AI Stock Depletion & TSO Vigilance Auditor Modal */}
+      <StockPredictionModal
+        isOpen={showPredictionModal}
+        onClose={() => setShowPredictionModal(false)}
+        shop={shop}
+      />
     </div>
   );
 };
