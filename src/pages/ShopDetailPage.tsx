@@ -57,49 +57,49 @@ export const ShopDetailPage: React.FC = () => {
       </button>
 
       {/* Official Dealership Profile Sheet */}
-      <div className="bg-white border border-slate-200 p-6 shadow-2xs space-y-6" style={{ borderRadius: '6px' }}>
+      <div className="bg-white border border-slate-200/90 p-6 sm:p-8 rounded-2xl shadow-xs space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-slate-100">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span
-                className="px-2.5 py-0.5 font-mono text-xs font-bold bg-[#0C1E33] text-white"
-                style={{ borderRadius: '3px' }}
-              >
+              <span className="px-3 py-1 font-mono text-xs font-bold bg-[#0C1E33] text-white rounded-md tracking-wider">
                 {shop.ardNumber}
               </span>
               <span
-                className={`px-2.5 py-0.5 text-xs font-semibold border ${
+                className={`px-3 py-0.5 text-xs font-bold rounded-full border ${
                   shop.isOpen
                     ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                    : 'bg-red-50 text-red-800 border-red-200'
+                    : 'bg-rose-50 text-rose-800 border-rose-200'
                 }`}
-                style={{ borderRadius: '3px' }}
               >
                 {shop.isOpen ? (isMl ? 'വിതരണം നടക്കുന്നു' : 'Open for Distribution') : (isMl ? 'അടച്ചിരിക്കുന്നു' : 'Closed')}
               </span>
-              <span
-                className="px-2.5 py-0.5 font-mono text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200"
-                style={{ borderRadius: '3px' }}
-              >
+              <span className="px-3 py-0.5 font-mono text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-full">
                 ePOS {shop.eposStatus}
               </span>
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               {isMl ? shop.nameMl : shop.nameEn}
             </h1>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
               {isMl ? 'അംഗീകൃത ലൈസൻസി' : 'Authorized Licensee'}:{' '}
-              <span className="font-semibold text-slate-800">{shop.licensee}</span> • {shop.ward}, {shop.taluk} Taluk
+              <strong className="font-semibold text-slate-800">{shop.licensee}</strong> • {shop.ward}, {shop.taluk} Taluk
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
+            <a
+              href={`tel:${shop.phone}`}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+            >
+              <Phone className="w-4 h-4 text-slate-600" />
+              <span>{isMl ? 'വിളിക്കുക' : 'Call'}</span>
+            </a>
+
             <button
               type="button"
               onClick={() => setActiveView('REPORT')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors"
-              style={{ borderRadius: '4px' }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-xl transition-colors"
             >
               <FileSpreadsheet className="w-4 h-4 text-slate-500" />
               <span>{isMl ? 'വിവരം നൽകുക' : 'Report Ground Status'}</span>
@@ -108,8 +108,7 @@ export const ShopDetailPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setSubscribeModalData({ shop })}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-blue-700 hover:bg-blue-800 transition-colors shadow-xs"
-              style={{ borderRadius: '4px' }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-blue-700 hover:bg-blue-800 rounded-xl transition-all shadow-xs"
             >
               <Bell className="w-4 h-4" />
               <span>{isMl ? 'അറിയിപ്പ് സജ്ജമാക്കുക' : 'Set Arrival Alert'}</span>
@@ -119,96 +118,96 @@ export const ShopDetailPage: React.FC = () => {
 
         {/* Operational Attributes Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-          <div className="p-3 bg-slate-50/60 border border-slate-100" style={{ borderRadius: '4px' }}>
-            <span className="text-[11px] uppercase font-semibold text-slate-400 block mb-1">
+          <div className="p-4 bg-slate-50/70 border border-slate-200/80 rounded-xl space-y-1">
+            <span className="text-[11px] uppercase font-bold text-slate-400 block tracking-wider">
               {isMl ? 'പ്രവർത്തന സമയം' : 'Operating Schedule'}
             </span>
-            <div className="flex items-center gap-1.5 text-slate-800 font-medium">
-              <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <div className="flex items-center gap-1.5 text-slate-800 font-semibold text-sm">
+              <Clock className="w-4 h-4 text-slate-500 shrink-0" />
               <span>{shop.openingHours}</span>
             </div>
-            <span className="text-[10px] text-slate-500 block mt-1">
+            <span className="text-[11px] text-slate-500 block pt-1">
               Lunch: 12:30–15:30 • Sundays Closed
             </span>
           </div>
 
-          <div className="p-3 bg-slate-50/60 border border-slate-100" style={{ borderRadius: '4px' }}>
-            <span className="text-[11px] uppercase font-semibold text-slate-400 block mb-1">
+          <div className="p-4 bg-slate-50/70 border border-slate-200/80 rounded-xl space-y-1">
+            <span className="text-[11px] uppercase font-bold text-slate-400 block tracking-wider">
               {isMl ? 'വിലാസം & വാർഡ്' : 'Location Address'}
             </span>
-            <div className="flex items-center gap-1.5 text-slate-800 font-medium">
-              <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <div className="flex items-center gap-1.5 text-slate-800 font-semibold text-sm">
+              <MapPin className="w-4 h-4 text-slate-500 shrink-0" />
               <span className="truncate">{shop.ward}, {shop.pincode}</span>
             </div>
-            <span className="text-[10px] text-slate-500 block mt-1 truncate">
+            <span className="text-[11px] text-slate-500 block pt-1 truncate">
               {isMl ? shop.addressMl : shop.addressEn}
             </span>
           </div>
 
-          <div className="p-3 bg-slate-50/60 border border-slate-100" style={{ borderRadius: '4px' }}>
-            <span className="text-[11px] uppercase font-semibold text-slate-400 block mb-1">
+          <div className="p-4 bg-slate-50/70 border border-slate-200/80 rounded-xl space-y-1">
+            <span className="text-[11px] uppercase font-bold text-slate-400 block tracking-wider">
               {isMl ? 'ടെലിഫോൺ ബന്ധം' : 'Official Telephone'}
             </span>
-            <div className="flex items-center gap-1.5 text-slate-800 font-mono font-medium">
-              <Phone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <div className="flex items-center gap-1.5 text-slate-800 font-mono font-semibold text-sm">
+              <Phone className="w-4 h-4 text-slate-500 shrink-0" />
               <span>{shop.phone}</span>
             </div>
-            <span className="text-[10px] text-slate-500 font-mono block mt-1">
+            <span className="text-[11px] text-slate-500 font-mono block pt-1">
               GPS: {shop.coordinates.lat.toFixed(4)}, {shop.coordinates.lng.toFixed(4)}
             </span>
           </div>
 
-          <div className="p-3 bg-slate-50/60 border border-slate-100" style={{ borderRadius: '4px' }}>
-            <span className="text-[11px] uppercase font-semibold text-slate-400 block mb-1">
+          <div className="p-4 bg-slate-50/70 border border-slate-200/80 rounded-xl space-y-1">
+            <span className="text-[11px] uppercase font-bold text-slate-400 block tracking-wider">
               {isMl ? 'ഓഡിറ്റ് പരിശോധന' : 'TSO Inspection'}
             </span>
-            <div className="flex items-center gap-1.5 text-slate-800 font-mono">
-              <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <div className="flex items-center gap-1.5 text-slate-800 font-medium text-sm">
+              <Calendar className="w-4 h-4 text-slate-500 shrink-0" />
               <span>Audited: {new Date(shop.lastAuditDate).toLocaleDateString()}</span>
             </div>
-            <span className="text-[10px] text-slate-500 font-mono block mt-1">
+            <span className="text-[11px] text-slate-500 font-mono block pt-1">
               ePOS Sync: {new Date(shop.eposLastSynced).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Segmented View Tabs */}
-      <div className="flex border-b border-slate-200 gap-6 text-xs font-semibold">
+      {/* Modern Segmented View Tabs */}
+      <div className="flex items-center gap-2 bg-slate-100/80 p-1 rounded-xl border border-slate-200/70 w-fit text-xs font-bold">
         <button
           type="button"
           onClick={() => setActiveTab('STOCK')}
-          className={`pb-2.5 border-b-2 transition-all ${
+          className={`px-4 py-2 rounded-lg transition-all ${
             activeTab === 'STOCK'
-              ? 'border-slate-900 text-slate-900'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'bg-white text-slate-900 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          {isMl ? 'സ്റ്റോക്ക് നിലവാരം' : 'Current Stock Inventory'} ({shop.stock.length})
+          {isMl ? 'സ്റ്റോക്ക് നിലവാരം' : 'Stock Inventory'} ({shop.stock.length})
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('CHALLANS')}
-          className={`pb-2.5 border-b-2 transition-all ${
+          className={`px-4 py-2 rounded-lg transition-all ${
             activeTab === 'CHALLANS'
-              ? 'border-slate-900 text-slate-900'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'bg-white text-slate-900 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          {isMl ? 'സപ്ലൈകോ ചെല്ലാൻ രേഖകൾ' : 'Official Delivery Challans'} ({challanItems.length})
+          {isMl ? 'സപ്ലൈകോ ചെല്ലാൻ രേഖകൾ' : 'Delivery Challans'} ({challanItems.length})
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('COMMUNITY')}
-          className={`pb-2.5 border-b-2 transition-all ${
+          className={`px-4 py-2 rounded-lg transition-all ${
             activeTab === 'COMMUNITY'
-              ? 'border-slate-900 text-slate-900'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'bg-white text-slate-900 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          {isMl ? 'പൊതുജന നിരീക്ഷണങ്ങൾ' : 'Community Activity Log'} ({shopReports.length})
+          {isMl ? 'പൊതുജന നിരീക്ഷണങ്ങൾ' : 'Community Log'} ({shopReports.length})
         </button>
       </div>
 
