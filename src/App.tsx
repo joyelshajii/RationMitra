@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { AuditModal } from './components/AuditModal';
 import { SubscribeModal } from './components/SubscribeModal';
+import { OfflineBanner } from './components/OfflineBanner';
 import { HomePage } from './pages/HomePage';
 import { ShopDetailPage } from './pages/ShopDetailPage';
 import { CitizenReportPage } from './pages/CitizenReportPage';
@@ -34,6 +35,7 @@ const AppContent: React.FC = () => {
       {/* Global Modals */}
       <AuditModal />
       <SubscribeModal />
+      <OfflineBanner />
     </div>
   );
 };

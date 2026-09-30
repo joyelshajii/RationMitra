@@ -1,0 +1,18 @@
+{
+  "name": "RationMitra Kerala - PDS Live Stock & Token Portal",
+  "short_name": "RationMitra",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0C1E33",
+  "theme_color": "#0C1E33",
+  "description": "Real-time PDS ration shop stock visibility, token booking, and verification portal for Kerala.",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
