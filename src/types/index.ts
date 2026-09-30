@@ -119,4 +119,36 @@ export interface SystemNotification {
   priority: 'NORMAL' | 'URGENT';
 }
 
+export interface VirtualToken {
+  id: string;
+  tokenNumber: string;
+  shopId: string;
+  shopArd: string;
+  shopName: string;
+  cardholderName: string;
+  cardNumber: string;
+  cardType: CardType;
+  timeSlot: string;
+  date: string;
+  status: 'CONFIRMED' | 'SERVED' | 'CANCELLED';
+  createdAt: string;
+}
+
+export interface DoorstepDeliveryRequest {
+  id: string;
+  shopId: string;
+  ardNumber: string;
+  beneficiaryName: string;
+  rationCardNumber: string;
+  cardType: CardType;
+  phone: string;
+  wardNumber: string;
+  address: string;
+  reason: 'BEDRIDDEN' | 'SENIOR_CITIZEN' | 'DIFFERENTLY_ABLED';
+  assignedVolunteerName?: string;
+  volunteerContact?: string;
+  status: 'PENDING_WARD_ASSIGNMENT' | 'VOLUNTEER_ASSIGNED' | 'DISPATCHED' | 'DELIVERED';
+  requestedAt: string;
+}
+
 export type Language = 'en' | 'ml';
